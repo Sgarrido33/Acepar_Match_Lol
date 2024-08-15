@@ -28,6 +28,18 @@ while True:
 
         pyautogui.moveTo(x, y)
         pyautogui.click()
-        break
+        # Tiempo para ver si fue aceptada la partida
+        time.sleep(11)
+
+        champion_select_template = cv2.imread('PantallaSeleccionCampeon.PNG', 0)
+        screenshot = pyautogui.screenshot()
+        screenshot = np.array(screenshot)
+        gray_scale_screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+        result = cv2.matchTemplate(gray_scale_screenshot, champion_select_template, cv2.TM_CCOEFF_NORMED)
+
+        # Salimos del bucle si la partida fue aceptada y estamos en la selección de campeon
+        if np.any(result >= umbral):
+            break
+
 
     time.sleep(0.5)
