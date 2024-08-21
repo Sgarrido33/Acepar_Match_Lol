@@ -1,0 +1,7 @@
+tkinter
+pyautogui
+opencv-python
+numpy
+psutil
+pyttsx3
+win32gui
