@@ -95,7 +95,7 @@ def check_lol_not_running():
                 process_found = True
         if not process_found:
             start_script()
-     
+
         time.sleep(20)
 
 def update_status():
@@ -104,13 +104,34 @@ def update_status():
     else:
         status_indicator.config(bg="red", text="Detenido")
 
+def change_language(lang):
+    print(f"Idioma cambiado a: {lang}")
+
+def open_language_menu():
+    language_button.config(relief="sunken")
+    language_menu = tk.Menu(root, tearoff=0)
+    languages = ["Japonés","Chino","Taiwanés","Español","Inglés","Coreano","Francés","Alemán","Italiano","Polaco","Rumano","Griego","Portugués","Húngaro","Ruso","Turco"]
+
+    for lang in languages:
+        language_menu.add_command(label=lang, command=lambda l=lang: change_language(l))
+
+    x = language_button.winfo_rootx()
+    y = language_button.winfo_rooty() + language_button.winfo_height()
+    language_menu.tk_popup(x, y)
+
+    language_button.config(relief="raised")
+
+def close_language_menu(event=None):
+    language_button.config(relief="raised")
+
+
 # Ventana principal
 root = tk.Tk()
 root.title("AAP")
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
-window_width = int(screen_width * 0.10)
+window_width = int(screen_width * 0.125)
 window_height = int(screen_height * 0.12)
 root.geometry(f"{window_width}x{window_height}")
 root.resizable(False, False)
@@ -125,11 +146,13 @@ start_button.pack(pady=5)
 stop_button = tk.Button(root, text="Detener", command=stop_script)
 stop_button.pack(pady=5)
 
+language_button = tk.Button(root, text="⚙", width=3, height=1, command=open_language_menu)
+language_button.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10)
+
 # Indicador visual de estado
 status_indicator = tk.Label(root, text="Detenido", bg="red", fg="white", width=20)
 status_indicator.pack(pady=10)
 
 # Ventana Abierta
 root.mainloop()
-
 
