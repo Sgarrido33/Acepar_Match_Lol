@@ -19,18 +19,14 @@ def is_window_on_screen(window_title):
         if hwnd == 0:
             return False
 
+
         is_visible = win32gui.IsWindowVisible(hwnd)
-        is_minimized = win32gui.IsIconic(hwnd)
         is_foreground = (hwnd == win32gui.GetForegroundWindow())
 
-        rect = win32gui.GetWindowRect(hwnd)
-        is_on_screen = (rect[2] > 0 and rect[3] > 0)
-
-        return is_visible and not is_minimized and is_foreground and is_on_screen
+        return is_visible and is_foreground
     except Exception as e:
         print(f"Error: {e}")
-        return False
-
+    return False
 
 
 def script_logic():
@@ -66,8 +62,7 @@ def script_logic():
                 time.sleep(10)
 
         if check_lol_process():
-            stop_script()
-            break
+            check_lol_not_running()
 
         time.sleep(2)
 
@@ -91,6 +86,18 @@ def check_lol_process():
             return True
     return False
 
+
+def check_lol_not_running():
+    while True:
+        process_found = False
+        for proc in psutil.process_iter(['name']):
+            if proc.info['name'] == "League of Legends.exe":
+                process_found = True
+        if not process_found:
+            start_script()
+     
+        time.sleep(20)
+
 def update_status():
     if script_running:
         status_indicator.config(bg="green", text="Activo")
@@ -101,7 +108,11 @@ def update_status():
 root = tk.Tk()
 root.title("AAP")
 
-root.geometry("240x120")
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+window_width = int(screen_width * 0.10)
+window_height = int(screen_height * 0.12)
+root.geometry(f"{window_width}x{window_height}")
 root.resizable(False, False)
 
 icon = tk.PhotoImage(file="lol_icon.png")
@@ -120,10 +131,5 @@ status_indicator.pack(pady=10)
 
 # Ventana Abierta
 root.mainloop()
-
-
-
-
-
 
 
