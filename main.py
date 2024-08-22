@@ -63,6 +63,7 @@ def script_logic():
 
         if check_lol_process():
             wait_end_match()
+            break
 
         time.sleep(2)
 
@@ -93,10 +94,11 @@ def wait_end_match():
             stop_script()
 
             while check_lol_process():
-                time.sleep(15)
+                time.sleep(20)
 
             start_script()
-        time.sleep(2)
+            break
+
 
 def update_status():
     if script_running:
