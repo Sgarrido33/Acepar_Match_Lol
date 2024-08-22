@@ -62,7 +62,7 @@ def script_logic():
                 time.sleep(10)
 
         if check_lol_process():
-            check_lol_not_running()
+            wait_end_match()
 
         time.sleep(2)
 
@@ -87,16 +87,16 @@ def check_lol_process():
     return False
 
 
-def check_lol_not_running():
+def wait_end_match():
     while True:
-        process_found = False
-        for proc in psutil.process_iter(['name']):
-            if proc.info['name'] == "League of Legends.exe":
-                process_found = True
-        if not process_found:
-            start_script()
+        if check_lol_process():
+            stop_script()
 
-        time.sleep(20)
+            while check_lol_process():
+                time.sleep(15)
+
+            start_script()
+        time.sleep(2)
 
 def update_status():
     if script_running:
