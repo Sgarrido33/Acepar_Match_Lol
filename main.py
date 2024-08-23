@@ -14,23 +14,36 @@ engine = pyttsx3.init()
 window_title = "League of Legends"
 
 def is_window_on_screen(window_title):
-    try:
-        hwnd = win32gui.FindWindow(None, window_title)
-        if hwnd == 0:
-            return False
+    hwnd = win32gui.FindWindow(None, window_title)
+    if hwnd == 0:
+        return False
+
+    is_visible = win32gui.IsWindowVisible(hwnd)
+    is_foreground = (hwnd == win32gui.GetForegroundWindow())
+
+    return is_visible and is_foreground
 
 
-        is_visible = win32gui.IsWindowVisible(hwnd)
-        is_foreground = (hwnd == win32gui.GetForegroundWindow())
 
-        return is_visible and is_foreground
-    except Exception as e:
-        print(f"Error: {e}")
-    return False
+def get_window_dimensions(window_title):
+    hwnd = win32gui.FindWindow(None, window_title)
+    rect = win32gui.GetWindowRect(hwnd)
+    x_left,y_top,x_right,y_bottom = rect
+    width = x_right - x_left
+    height = y_bottom - y_top
+
+    return (x_left, y_top, width, height)
+
+def click_accept(window_title):
+    dimensions = get_window_dimensions(window_title)
+    x_left, y_top, width, height = dimensions
+    center_x = x_left + width //2
+    center_y = y_top + height //2
+    pyautogui.click(center_x*0.9, center_y*1.3)
 
 
 def script_logic():
-    template = cv2.imread('PartidaEncontrada.jpg', 0)
+    template = cv2.imread('MatchFound.jpg', 0)
     while script_running:
         screenshot = pyautogui.screenshot()
         screenshot = np.array(screenshot)
@@ -40,21 +53,14 @@ def script_logic():
         result = cv2.matchTemplate(gray_scale_screenshot, template, cv2.TM_CCOEFF_NORMED)
 
         # Umbral para la deteccion
-        umbral = 0.7
+        umbral = 0.85
         loc_coords = np.where(result >= umbral)
 
         # Si se encuentra la imagen
         if len(loc_coords[0]) > 0:
             if is_window_on_screen(window_title):
-                # Primer match
-                x, y = loc_coords[1][0], loc_coords[0][0]
-                # Mover un poco hacia el centro por sea
-                x += 80
-                y += 30
-
-                pyautogui.moveTo(x, y)
-                pyautogui.click()
-
+                click_accept(window_title)
+                time.sleep(1)
                 engine.say("Partida Encontrada")
                 engine.runAndWait()
 
@@ -157,4 +163,5 @@ status_indicator.pack(pady=10)
 
 # Ventana Abierta
 root.mainloop()
+
 
